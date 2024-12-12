@@ -1,4 +1,4 @@
-package backend.academy.samples;
+package backendacademy.samples;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package backend.academy.samples;
+package backendacademy.samples;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -12,19 +12,18 @@ import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import static backend.academy.samples.AssertjExamplesTest.Race.DRAWF;
-import static backend.academy.samples.AssertjExamplesTest.Race.ELF;
-import static backend.academy.samples.AssertjExamplesTest.Race.HOBBIT;
-import static backend.academy.samples.AssertjExamplesTest.Race.MAIA;
-import static backend.academy.samples.AssertjExamplesTest.Race.MAN;
-import static backend.academy.samples.AssertjExamplesTest.Race.ORC;
+import static backendacademy.samples.AssertjExamplesTest.Race.DRAWF;
+import static backendacademy.samples.AssertjExamplesTest.Race.ELF;
+import static backendacademy.samples.AssertjExamplesTest.Race.HOBBIT;
+import static backendacademy.samples.AssertjExamplesTest.Race.MAIA;
+import static backendacademy.samples.AssertjExamplesTest.Race.MAN;
+import static backendacademy.samples.AssertjExamplesTest.Race.ORC;
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.in;
 import static org.assertj.core.api.Assertions.not;
 import static org.assertj.core.api.Assertions.notIn;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
-import static org.assertj.core.api.InstanceOfAssertFactories.DURATION;
 
 /**
  * AssertJ is a Java library that provides a rich set of assertions
