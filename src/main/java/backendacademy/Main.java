@@ -1,5 +1,16 @@
 package backendacademy;
 
+// Финальная таблица результатов запуска тестов находится в файле Results.md
+
+import java.lang.invoke.CallSite;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Scope;
@@ -11,23 +22,19 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
 
 @State(Scope.Thread)
+@SuppressWarnings("checkstyle:MagicNumber")
 public class Main {
     private static final String METHOD_NAME = "name";
     private Student student;
-    private Method method;
+    private Method reflectMethod;
     private MethodHandle methodHandle;
+    private Function<Student, String> lambdaMetafactoryFunction;
 
     public static void main(String[] args) throws RunnerException {
         Options options = new OptionsBuilder()
-            .include(Main.class.getSimpleName()) // ReflectionBenchmark
+            .include(Main.class.getSimpleName())
             .shouldFailOnError(true)
             .shouldDoGC(true)
             .mode(Mode.AverageTime)
@@ -44,15 +51,23 @@ public class Main {
     }
 
     @Setup
-    public void setup() throws NoSuchMethodException, IllegalAccessException {
+    public void setup() throws Throwable {
         student = new Student("Alina", "Zhuravleva");
-        method = student.getClass().getMethod(METHOD_NAME);
+        reflectMethod = student.getClass().getMethod(METHOD_NAME);
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodType methodType = MethodType.methodType(String.class);
         methodHandle  = lookup.findVirtual(Student.class, METHOD_NAME, methodType);
 
-
+        CallSite callSite = LambdaMetafactory.metafactory(
+            lookup,
+            "apply",
+            MethodType.methodType(Function.class),
+            MethodType.methodType(Object.class, Object.class),
+            methodHandle,
+            MethodType.methodType(String.class, Student.class)
+        );
+        lambdaMetafactoryFunction = (Function<Student, String>) callSite.getTarget().invokeExact();
     }
 
     @Benchmark
@@ -62,13 +77,16 @@ public class Main {
 
     @Benchmark
     public void reflection(Blackhole bh) throws InvocationTargetException, IllegalAccessException {
-        bh.consume(method.invoke(student));
+        bh.consume(reflectMethod.invoke(student));
     }
 
     @Benchmark
     public void methodHandles(Blackhole bh) throws Throwable {
-        bh.consume(methodHandle.invokeExact(student));
+        bh.consume((String) methodHandle.invokeExact(student));
     }
 
-
+    @Benchmark
+    public void lambdaMetafactory(Blackhole bh) {
+        bh.consume(lambdaMetafactoryFunction.apply(student));
+    }
 }
