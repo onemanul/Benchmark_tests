@@ -24,9 +24,9 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 @State(Scope.Thread)
-@SuppressWarnings("checkstyle:MagicNumber")
 public class Main {
     private static final String METHOD_NAME = "name";
+    private static final int BENCHMARK_TIME = 120;      // seconds
     private Student student;
     private Method reflectMethod;
     private MethodHandle methodHandle;
@@ -42,9 +42,9 @@ public class Main {
             .forks(1)
             .warmupForks(1)
             .warmupIterations(1)
-            .warmupTime(TimeValue.seconds(5))
+            .warmupTime(TimeValue.seconds(BENCHMARK_TIME))
             .measurementIterations(1)
-            .measurementTime(TimeValue.seconds(5))
+            .measurementTime(TimeValue.seconds(BENCHMARK_TIME))
             .build();
 
         new Runner(options).run();
